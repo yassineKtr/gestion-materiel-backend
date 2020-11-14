@@ -56,11 +56,11 @@ router.post("/login", async (req, res) => {
 
   //when logged in
   //create and assign a token
-  const token = jwt.sign(
-    { id: user._id, name: user.name },
-    process.env.TOKEN_SECRET
-  );
-  res.json({ token });
+  const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET);
+  res.json({
+    token,
+    user: { id: user._id, name: user.name, email: user.email },
+  });
 });
 
 router.post("/check", verify, (req, res) => {
