@@ -5,9 +5,8 @@ const cors = require("cors");
 
 const app = express();
 
-//Import routes
-const authRoute = require("./routes/auth");
-const postRoute = require("./routes/posts");
+const routes = require("./routes");
+const ErrorHandler = require("./helpers/errorHandler");
 
 //connect to mongo
 mongoose
@@ -18,15 +17,23 @@ mongoose
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err));
 
-//body-parser middleware
 app.use(express.json());
 
 // CORS middleware
 app.use(cors());
 
-//Route Middlewares
-app.use("/api/user", authRoute);
-app.use("/api/posts", postRoute);
+// Routes
+app.use("/api", routes);
+
+app.use((req, res, next) => {
+  next(new ErrorHandler(404, "Not Found"));
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.code).json({
+    message: err.message,
+  });
+});
 
 //port
 const port = process.env.PORT || 5000;
