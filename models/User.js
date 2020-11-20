@@ -1,4 +1,3 @@
-const { array } = require("@hapi/joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
