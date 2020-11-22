@@ -4,15 +4,12 @@ const { articleValidation } = require("../helpers/validation");
 const ErrorHandler = require("../helpers/errorHandler");
 const mongoose = require("mongoose");
 const ObjectId = require("mongoose").Types.ObjectId;
+const { paginatedResults } = require("../helpers/paginatedResults");
 
 //READ ALL
-router.get("/", async (req, res, next) => {
-  try {
-    const articles = await Article.find({});
-    res.json(articles);
-  } catch (error) {
-    next(error);
-  }
+router.get("/", paginatedResults(Article), (req, res, next) => {
+  //url : /articles?page=55&limit=55
+  res.json(res.paginatedResults);
 });
 
 //READ ONE
