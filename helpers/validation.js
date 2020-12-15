@@ -30,7 +30,7 @@ const articleValidation = (data) => {
     name: Joi.string().required(),
     image: Joi.string().required(),
     category: Joi.string().required(),
-    stock: Joi.array().items(stock).required(),
+    //stock: Joi.array().items(stock).required(),
   });
   return schema.validate(data);
 };

@@ -24,6 +24,8 @@ app.use(cors());
 
 // Routes
 app.use("/api", routes);
+//making uploads public
+app.use("/uploads", express.static("uploads"));
 
 app.use((req, res, next) => {
   next(new ErrorHandler(404, "Not Found"));

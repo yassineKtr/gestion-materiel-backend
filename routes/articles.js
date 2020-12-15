@@ -5,6 +5,24 @@ const ErrorHandler = require("../helpers/errorHandler");
 const mongoose = require("mongoose");
 const ObjectId = require("mongoose").Types.ObjectId;
 const { paginatedResults } = require("../helpers/paginatedResults");
+const multer = require("multer");
+
+//upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 3,
+  },
+});
 
 //READ ALL
 router.get("/", paginatedResults(Article), (req, res, next) => {
@@ -26,20 +44,36 @@ router.get("/:id", async (req, res, next) => {
 });
 
 //CREATE ONE
-router.post("/", async (req, res, next) => {
-  const article = req.body;
+router.post("/", upload.single("image"), async (req, res, next) => {
+  if (!req.file) return next(new ErrorHandler(404, "please select an image"));
+  const article = {
+    name: req.body.name,
+    image: req.file.path,
+    category: req.body.category,
+    stock: req.body.stock,
+  };
   const { error } = articleValidation(article);
   if (error) return next(new ErrorHandler(422, error.details[0].message));
-  const finalArticle = new Article(req.body);
+  const finalArticle = new Article({
+    name: req.body.name,
+    image: req.file.path,
+    category: req.body.category,
+    stock: req.body.stock,
+  });
 
   const inserted = await finalArticle.save();
   res.json(inserted);
 });
 
 //UPDATE ONE
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", upload.single("image"), async (req, res, next) => {
   const { id } = req.params;
-  const article = req.body;
+  const article = {
+    name: req.body.name,
+    image: req.file.path,
+    category: req.body.category,
+    stock: req.body.stock,
+  };
   if (!ObjectId.isValid(id))
     return next(new ErrorHandler(422, "ObjectId format not valid"));
   const { error } = articleValidation(article);
